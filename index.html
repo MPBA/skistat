@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version. -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Hello World!</title>
+  <script src="../Build/Cesium/Cesium.js"></script>
+  <style>
+      @import url(../Build/Cesium/Widgets/widgets.css);
+      html, body, #cesiumContainer {
+          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+      }
+  </style>
+</head>
+<body>
+  <div id="cesiumContainer"></div>
+  <script>
+      
+var svgDataDeclare = "data:image/svg+xml,";
+             var svgCircle = '<circle cx="10" cy="10" r="5" stroke="black" stroke-width="3" fill="red" /> ';
+             var svgPrefix = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" xml:space="preserve">';
+             var svgSuffix = "</svg>";
+             var svgStringMarker = svgPrefix + svgCircle + svgSuffix;
+      
+var svgArrow = '<polygon points="30.6,69 50.3,34.9 70,69 " fill="red"/>';
+var svgStringArrow = svgPrefix + svgPrefix + svgArrow + svgSuffix;
+
+// create the cesium entity
+var svgEntityMarker = svgDataDeclare + svgStringMarker;
+var svgEntityArrow = svgDataDeclare + svgStringArrow;
+      
+var arrow = 'data:image/svg+xml;base64,' + 
+           btoa('<svg xmlns="http://www.w3.org/2000/svg" height="100" width="100"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"/></svg>');      
+      
+var czml = [{
+    "id" : "document",
+    "name" : "CZML Point - Time Dynamic",
+    "version" : "1.0"
+}, {
+    "id" : "point",
+    "availability" :"2017-01-27T16:00:00Z/2017-01-27T16:05:00Z",
+    "position" : {
+        "epoch" : "2017-01-27T16:00:00Z",
+        "cartographicDegrees" : [
+            0,   13, 46, 0,
+            100, 11, 46, 0
+        ]
+    },
+    "billboard" : {
+        "image" : arrow,
+        "scale" : 0.25
+    }
+    
+}];
+
+var viewer = new Cesium.Viewer('cesiumContainer');
+viewer.dataSources.add(Cesium.CzmlDataSource.load(czml));
+
+viewer.entities.add({
+                 position: Cesium.Cartesian3.fromDegrees(13, 46),
+                 billboard: {
+                     image: svgEntityMarker,
+                     verticalOrigin : Cesium.VerticalOrigin.CENTER
+                 }
+             });
+
+var entity = viewer.entities.add({
+  position: Cesium.Cartesian3.fromDegrees(11, 46),
+    billboard : {
+        image:svgEntityMarker,
+    verticalOrigin : Cesium.VerticalOrigin.CENTER}
+});
+
+var line = viewer.entities.add({
+  polyline : {
+    positions : Cesium.Cartesian3.fromDegreesArray([13, 46,
+													11, 46]),
+    width : 5,
+    material : Cesium.Color.RED
+  }
+});
+
+viewer.zoomTo(viewer.entities);
+
+
+
+  </script>
+</body>
+</html>
