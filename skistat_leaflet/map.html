@@ -387,7 +387,6 @@
                     $info.append($(L.HTMLUtils.buildTable(record, className = '', ignoreFields = ['code', 'passaggi', 'label_ora'])).wrap('<div/>').parent().html());
                     $info.append($('<div id="chart_div"></div>'));
 
-
                     var a = eval(record.label_ora);
                     var b = eval(record.passaggi);
                     var c = a.map(function(e, i) {
