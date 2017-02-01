@@ -69,9 +69,9 @@
             top: 200px;
             right: 0px;
             width: 400px;
-            height: 400px;
+            height: 700px;
             overflow-y: auto;
-            max-height: 400px;
+            max-height: 700px;
             z-index: 999;
         }
         
@@ -89,24 +89,6 @@
 
 <body>
 
-    <div class="navbar">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand" href="#">Flight Data</a>
-
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="active"><a href="http://humangeo.github.io/leaflet-dvf">Home</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="container-fluid">
         <div class="row">
@@ -137,7 +119,7 @@
         });
 
 
-        function drawBasic(rows) {
+        function drawBars(rows) {
 
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Time Slots');
@@ -166,6 +148,33 @@
 
             var chart = new google.visualization.ColumnChart(
                 document.getElementById('chart_div'));
+
+            chart.draw(data, options);
+        }
+
+        function drawPie(rows) {
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Time Slots');
+            data.addColumn('number', 'Bips');
+
+            data.addRows(rows);
+
+            var options = {
+                height: 250,
+                legend: 'labeled',
+                sliceVisibilityThreshold: .05,
+
+                chartArea: {
+                    top: 15,
+                    bottom: 80,
+                    width: '75%',
+                    height: '34%'
+                }
+            };
+
+            var chart = new google.visualization.PieChart(
+                document.getElementById('pie_div'));
 
             chart.draw(data, options);
         }
@@ -386,6 +395,14 @@
                     $info.empty();
                     $info.append($(L.HTMLUtils.buildTable(record, className = '', ignoreFields = ['code', 'passaggi', 'label_ora'])).wrap('<div/>').parent().html());
                     $info.append($('<div id="chart_div"></div>'));
+                    $info.append($('<div id="pie_div"></div>'));
+
+                    var pie = []
+                    for (var j = 0; j < connections.length; j++) {
+                        if (connections[j].source == record.code)
+                            pie.push([connections[j]['target-label'], connections[j].cnt])
+                    }
+                    console.log(pie)
 
                     var a = eval(record.label_ora);
                     var b = eval(record.passaggi);
@@ -393,7 +410,8 @@
                         return [a[i], b[i]];
                     });
 
-                    google.charts.setOnLoadCallback(drawBasic(c));
+                    google.charts.setOnLoadCallback(drawBars(c));
+                    google.charts.setOnLoadCallback(drawPie(pie));
 
                     allLayer.options.includeLayer = function(newRecord) {
                         return newRecord.source === record.code;
@@ -419,4 +437,3 @@
 </body>
 
 </html>
->>>>>>> c903e4d69f336e92beee9fc235f2967732b96741
