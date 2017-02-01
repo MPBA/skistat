@@ -177,7 +177,7 @@
 		{
 			connections[i].cnt =obj[connections[i].source+'-'+connections[i].target]
 		}
-		
+				
 		connections = _.sortBy(connections, function (value) {
 			return -1 * value.cnt;
 		});
@@ -264,7 +264,7 @@
 		};
 		var allLayer = new L.Graph(connections, options);
 		map.addLayer(allLayer);
-	
+		console.log('done');
 	
 	
 		var liftsLayer = new L.MarkerDataLayer(liftsLookup, {
