@@ -6116,10 +6116,12 @@ L.DataLayer = L.LayerGroup.extend({
                 var valueFunction;
                 var displayText = propertyOptions.displayText ? propertyOptions.displayText(fieldValue) : fieldValue;
 
-                legendDetails[property] = {
-                    name: propertyOptions.displayName,
-                    value: displayText
-                };
+                if (propertyOptions.displayName != 'log') {
+                    legendDetails[property] = {
+                        name: propertyOptions.displayName,
+                        value: displayText
+                    };
+                }
 
                 if (propertyOptions.styles) {
                     layerOptions = L.extend(layerOptions, propertyOptions.styles[fieldValue]);
@@ -8580,6 +8582,7 @@ L.Graph = L.Graph.extend({
         return location.location;
     },
     _getLocation: function(record, index) {
+        //console.log('entro')
         var fromField = this.options.fromField;
         var toField = this.options.toField;
         var location;
