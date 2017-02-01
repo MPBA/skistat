@@ -208,68 +208,68 @@
 		//var connectionLookup = _.groupBy(connections, function (value) {
 			//	return value.cad_type;
 			//});
-			var searchWords = []
-			for (var i = 0; i < connections.length; i++) {
-				searchWords.push('-' + connections[i].source + '-' + connections[i].target + '-')
-			}
-			var tmp = ''
-			var re = new RegExp(searchWords.join("|"), "g");
-			for (var i = 0; i < persone.length; i++) {
+	        var searchWords = []
+	        for (var i = 0; i < connections.length; i++) {
+	            searchWords.push('-' + connections[i].source + '-' + connections[i].target + '-')
+	        }
+	        var tmp = ''
+	        var re = new RegExp(searchWords.join("|"), "g");
+	        for (var i = 0; i < persone.length; i++) {
 
-				tmp += persone[i].path
+	            tmp += persone[i].path
 
-			}
+	        }
 
-			function matchOverlap(input, re) {
-				var r = [],
-				m;
-				// prevent infinite loops
-				if (!re.global) re = new RegExp(
-					re.source, (re + '').split('/').pop() + 'g'
-				);
-				while (m = re.exec(input)) {
-					re.lastIndex -= m[0].length - 1;
-					r.push(m[0]);
-				}
-				return r;
-			}
+	        function matchOverlap(input, re) {
+	            var r = [],
+	                m;
+	            // prevent infinite loops
+	            if (!re.global) re = new RegExp(
+	                re.source, (re + '').split('/').pop() + 'g'
+	            );
+	            while (m = re.exec(input)) {
+	                re.lastIndex -= m[0].length - 1;
+	                r.push(m[0]);
+	            }
+	            return r;
+	        }
 
 
-			// var tmp = tmp.match(re)
-			var tmp = matchOverlap(tmp, re)
+	        // var tmp = tmp.match(re)
+	        var tmp = matchOverlap(tmp, re)
 
-			var obj = {};
-			for (var i = 0, j = tmp.length; i < j; i++) {
-				obj[tmp[i]] = (obj[tmp[i]] || 0) + 1;
-			}
-			var m = 0
-			for (var i = 0; i < connections.length; i++) {
-				connections[i].cnt = obj['-' + connections[i].source + '-' + connections[i].target + '-']
-				m = Math.max(m, connections[i].cnt)
-			}
-			connections = _.sortBy(connections, function(value) {
-				return -1 * value.cnt;
-			});
+	        var obj = {};
+	        for (var i = 0, j = tmp.length; i < j; i++) {
+	            obj[tmp[i]] = (obj[tmp[i]] || 0) + 1;
+	        }
+	        var m = 0
+	        for (var i = 0; i < connections.length; i++) {
+	            connections[i].cnt = obj['-' + connections[i].source + '-' + connections[i].target + '-']
+	            m = Math.max(m, connections[i].cnt)
+	        }
+	        connections = _.sortBy(connections, function(value) {
+	            return -1 * value.cnt;
+	        });
 
-			var maxCount = Number(connections[0].cnt);
-			var count = 0;
+	        var maxCount = Number(connections[0].cnt);
+	        var count = 0;
 
-			// Get a lift location.  This function looks up an airport from a provided airport code
-			var getLocation = function(context, locationField, fieldValues, callback) {
-				var key = fieldValues[0];
-				var lift = liftsLookup[key];
-				var location;
+	        // Get a lift location.  This function looks up an airport from a provided airport code
+	        var getLocation = function(context, locationField, fieldValues, callback) {
+	            var key = fieldValues[0];
+	            var lift = liftsLookup[key];
+	            var location;
 
-				if (lift) {
-					var latlng = new L.LatLng(Number(lift.lat), Number(lift.lon));
-					location = {
-						location: latlng,
-						text: key,
-						center: latlng
-					};
-				}
-				return location;
-			};
+	            if (lift) {
+	                var latlng = new L.LatLng(Number(lift.lat), Number(lift.lon));
+	                location = {
+	                    location: latlng,
+	                    text: key,
+	                    center: latlng
+	                };
+	            }
+	            return location;
+	        };
 
 			var sizeFunction = new L.LinearFunction([1, 16], [253, 48]);
 			var options = {

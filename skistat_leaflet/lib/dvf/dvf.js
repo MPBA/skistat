@@ -7642,6 +7642,13 @@ L.flowLine = function(data, options) {
     return new L.FlowLine(data, options);
 };
 
+
+function circlePath(cx, cy, r, deg) {
+    var theta = deg * Math.PI / 180,
+        dx = r * Math.cos(theta),
+        dy = -r * Math.sin(theta);
+    return "M " + cx + " " + cy + "m " + dx + "," + dy + "a " + r + "," + r + " 0 1,0 " + -2 * dx + "," + -2 * dy + "a " + r + "," + r + " 0 1,0 " + 2 * dx + "," + 2 * dy;
+}
 /*
  *
  */
@@ -7742,10 +7749,14 @@ L.ArcedPolyline = L.Path.extend({
             offset1 = segmentFunction.getPointAtPercent(this.options.controlPointOffsets.x);
             offset2 = segmentFunction.getPointAtPercent(1.0 - this.options.controlPointOffsets.y);
         }
+        if (offset1.x == offset2.x && offset1.y == offset2.y) {
 
+            segmentFunction = null;
+            return (circlePath(point2.x, point2.y - 50, 50, 240))
+
+        }
         // Setup the SVG path syntax based on Q vs. C curves
         controlPoint = this.options.mode === 'C' ? ['C', offset1.x, ',', offset1.y - heightOffset, offset2.x, ',', offset2.y - heightOffset] : ['Q', offset1.x, ',', offset1.y - heightOffset];
-
         parts = ['M', point1.x, ',', point1.y, ].concat(controlPoint).concat([point2.x, ',', point2.y]);
 
         segmentFunction = null;
