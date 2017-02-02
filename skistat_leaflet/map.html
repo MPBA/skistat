@@ -150,7 +150,41 @@
                 document.getElementById('chart_div'));
 
             chart.draw(data, options);
+        };
+
+        function drawBars_label(rows) {
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Time Slots');
+            data.addColumn('number', 'Bips');
+
+            data.addRows(rows);
+
+            var options = {
+                height: 100,
+                legend: 'none',
+                /*vAxis: {
+                    title: 'Bips'
+                },*/
+                hAxis: {
+                    // title: "Hour range",
+                    slantedText: true,
+                    slantedTextAngle: 45
+                },
+                chartArea: {
+                    top: 15,
+                    bottom: 40,
+                    width: '65%',
+                    height: '80%'
+                }
+            };
+
+            var chart = new google.visualization.ColumnChart(
+                document.getElementById('legend_plot'));
+
+            chart.draw(data, options);
         }
+
 
         function drawPie(rows) {
 
@@ -291,6 +325,10 @@
             toField: 'target',
             fromLabel: 'source-label',
             toLabel: 'target-label',
+            chart_labels: 'label_ora',
+            chart_data: 'passaggi',
+            graph_fuction: drawBars_label,
+            graph_div: 'legend_plot',
             codeField: null,
             getLocation: getLocation,
             getEdge: L.Graph.EDGESTYLE.ARC,
