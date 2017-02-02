@@ -2,438 +2,443 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Ski Connection Data</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<title>Ski Connection Data</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <!-- Le styles -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <style>
-        body {
-            padding-top: 60px;
-            /* 60px to make the container go all the way to the bottom of the topbar */
-        }
+	<!-- Le styles -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+	html, body, #container {
+	  height: 100%;
+	  overflow: hidden;
+	  width: 100%;
+	}
+	
+	#map {
+	  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	  height: 100%;
+	  width: auto;
+	}
         
-        #map div.leaflet-tile-pane {
-            opacity: 0.8;
-        }
+	#map div.leaflet-tile-pane {
+		opacity: 0.8;
+	}
         
-        div.leaflet-control-legend {
-            width: 400px;
-            max-height: 80px;
-        }
+	div.leaflet-control-legend {
+		width: 400px;
+		max-height: 80px;
+	}
         
-        .legend-line {
-            margin-bottom: 20px;
-        }
+	.legend-line {
+		margin-bottom: 20px;
+	}
         
-        .legend-line div.scale-bars i {
-            background: none !important;
-            width: 0px;
-            height: 0px !important;
-            vertical-align: middle;
-            border-left: none !important;
-        }
+	.legend-line div.scale-bars i {
+		background: none !important;
+		width: 0px;
+		height: 0px !important;
+		vertical-align: middle;
+		border-left: none !important;
+	}
         
-        .line-legend .legend-box {
-            width: 0px;
-            height: 0px !important;
-            border-top: none !important;
-            border-right: none !important;
-        }
+	.line-legend .legend-box {
+		width: 0px;
+		height: 0px !important;
+		border-top: none !important;
+		border-right: none !important;
+	}
         
-        .airport-icon .icon-plane {
-            text-align: center;
-            vertical-align: middle;
-            display: inline-block;
-            text-shadow: 2px 2px 3px #555555
-        }
+	.airport-icon .icon-plane {
+		text-align: center;
+		vertical-align: middle;
+		display: inline-block;
+		text-shadow: 2px 2px 3px #555555
+	}
         
-        .airport-icon .code {
-            color: #777777;
-            text-align: center;
-            vertical-align: middle;
-            display: inline-block;
-            text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-            font-weight: bold;
-            *background-color: rgba(255, 255, 255, 0.5);
-            *border-radius: 3px;
-        }
+	.airport-icon .code {
+		color: #777777;
+		text-align: center;
+		vertical-align: middle;
+		display: inline-block;
+		text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+		font-weight: bold;
+		*background-color: rgba(255, 255, 255, 0.5);
+		*border-radius: 3px;
+	}
         
-        #info {
-            margin: 10px;
-            position: absolute;
-            top: 200px;
-            right: 0px;
-            width: 400px;
-            height: 700px;
-            overflow-y: auto;
-            max-height: 700px;
-            z-index: 999;
-        }
+	#info {
+		margin: 10px;
+		position: absolute;
+		right: 0px;
+		bottom:0;
+		width: 400px;
+		height: 700px;
+		overflow-y: auto;
+		max-height: 700px;
+		z-index: 999999;
+	}
         
-        #info table {
-            background-color: #fff;
-        }
-    </style>
-    <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-    <link rel="stylesheet" href="lib/dvf/dvf.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/example.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="css/ui.css" type="text/css" media="screen" />
+	#info table {
+		background-color: #fff;
+	}
+	</style>
+	<!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+	<link rel="stylesheet" href="lib/dvf/dvf.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="css/example.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="css/ui.css" type="text/css" media="screen" />
 </head>
 
 <body>
+	
 
 
-    <div class="container-fluid">
-        <div class="row">
-            <div id="map"></div>
-            <div id="info" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span>
 
-            </div>
-        </div>
-    </div>
+	<div id="container">
+			<div id="map" style="width:100%; height:100%"></div>
+			<div id="info" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
+	</div>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-    <script src="js/leaflet/TileLayer.Grayscale.js"></script>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
-    <script type="text/javascript" src="data/v2/lifts.js"></script>
-    <script type="text/javascript" src="data/v2/connections.js"></script>
-    <script type="text/javascript" src="data/v2/dati.js"></script>
-    <script type="text/javascript" src="lib/dvf/dvf.js"></script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+	<script src="js/leaflet/TileLayer.Grayscale.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+	<script type="text/javascript" src="data/v2/lifts.js"></script>
+	<script type="text/javascript" src="data/v2/connections.js"></script>
+	<script type="text/javascript" src="data/v2/dati.js"></script>
+	<script type="text/javascript" src="lib/dvf/dvf.js"></script>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <script>
-        google.charts.load('current', {
-            packages: ['corechart', 'bar']
-        });
+	<script>
+	google.charts.load('current', {
+		packages: ['corechart', 'bar']
+	});
 
 
-        function drawBars(rows) {
+	function drawBars(rows) {
 
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Time Slots');
-            data.addColumn('number', 'Bips');
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Time Slots');
+		data.addColumn('number', 'Bips');
 
-            data.addRows(rows);
+		data.addRows(rows);
 
-            var options = {
-                height: 250,
-                legend: 'none',
-                vAxis: {
-                    title: 'Bips'
-                },
-                hAxis: {
-                    title: "Hour range",
-                    slantedText: true,
-                    slantedTextAngle: 45
-                },
-                chartArea: {
-                    top: 15,
-                    bottom: 80,
-                    width: '75%',
-                    height: '34%'
-                }
-            };
+		var options = {
+			height: 250,
+			legend: 'none',
+			vAxis: {
+				title: 'Bips'
+			},
+			hAxis: {
+				title: "Hour range",
+				slantedText: true,
+				slantedTextAngle: 45
+			},
+			chartArea: {
+				top: 15,
+				bottom: 80,
+				width: '75%',
+				height: '34%'
+			}
+		};
 
-            var chart = new google.visualization.ColumnChart(
-                document.getElementById('chart_div'));
+		var chart = new google.visualization.ColumnChart(
+			document.getElementById('chart_div'));
 
-            chart.draw(data, options);
-        }
+			chart.draw(data, options);
+		}
 
-        function drawPie(rows) {
+		function drawPie(rows) {
 
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Time Slots');
-            data.addColumn('number', 'Bips');
+			var data = new google.visualization.DataTable();
+			data.addColumn('string', 'Time Slots');
+			data.addColumn('number', 'Bips');
 
-            data.addRows(rows);
+			data.addRows(rows);
 
-            var options = {
-                height: 250,
-                legend: 'labeled',
-                sliceVisibilityThreshold: .05,
+			var options = {
+				height: 250,
+				legend: 'labeled',
+				sliceVisibilityThreshold: .05,
 
-                chartArea: {
-                    top: 15,
-                    bottom: 80,
-                    width: '75%',
-                    height: '34%'
-                }
-            };
+				chartArea: {
+					top: 15,
+					bottom: 80,
+					width: '75%',
+					height: '34%'
+				}
+			};
 
-            var chart = new google.visualization.PieChart(
-                document.getElementById('pie_div'));
+			var chart = new google.visualization.PieChart(
+				document.getElementById('pie_div'));
 
-            chart.draw(data, options);
-        }
-    </script>
+				chart.draw(data, options);
+			}
+			</script>
 
-    <script>
-        var $info = $('#info');
+			<script>
+			var $info = $('#info');
 
-        var map = L.map('map').setView([46.34964, 11.54823], 13);
-        var base_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciyk0od5a001u2skez1cmz44q/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a', 'b', 'c']
-        }).addTo(map);
+			var map = L.map('map').setView([46.34964, 11.54823], 13);
+			var base_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciyk0od5a001u2skez1cmz44q/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				subdomains: ['a', 'b', 'c']
+			}).addTo(map);
 
-        var grey_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciykoji0t00482slafcwg8nxj/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">MapBox</a>',
-            subdomains: ['a', 'b', 'c']
-        }).addTo(map);
+			var grey_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciykoji0t00482slafcwg8nxj/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">MapBox</a>',
+				subdomains: ['a', 'b', 'c']
+			}).addTo(map);
 
-        var slopes_layer = L.tileLayer('http://tiles.opensnowmap.org/tiles-pistes/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.opensnowmap.org/copyright">OpenSnowMap</a>',
-            subdomains: ['a', 'b', 'c']
-        }).addTo(map);
-        var baseLayers = {
-            "Base Layer": base_layer,
-            "Grey Layer": grey_layer
-        };
+			var slopes_layer = L.tileLayer('http://tiles.opensnowmap.org/tiles-pistes/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.opensnowmap.org/copyright">OpenSnowMap</a>',
+				subdomains: ['a', 'b', 'c']
+			}).addTo(map);
+			var baseLayers = {
+				"Base Layer": base_layer,
+				"Grey Layer": grey_layer
+			};
 
-        var overlays = {
-            "Slopes layer": slopes_layer
-        };
+			var overlays = {
+				"Slopes layer": slopes_layer
+			};
 
-        var layerControl = L.control.layers(baseLayers, overlays).addTo(map);
-
-
-        var liftsLookup = L.GeometryUtils.arrayToMap(lifts, 'code');
+			var layerControl = L.control.layers(baseLayers, overlays).addTo(map);
 
 
-        // Group connection data by cart type
-        //var connectionLookup = _.groupBy(connections, function (value) {
-        //	return value.cad_type;
-        //});
-        var searchWords = []
-        for (var i = 0; i < connections.length; i++) {
-            searchWords.push('-' + connections[i].source + '-' + connections[i].target + '-')
-        }
-        var tmp = ''
-        var re = new RegExp(searchWords.join("|"), "g");
-        for (var i = 0; i < persone.length; i++) {
-
-            tmp += persone[i].path
-
-        }
-
-        function matchOverlap(input, re) {
-            var r = [],
-                m;
-            // prevent infinite loops
-            if (!re.global) re = new RegExp(
-                re.source, (re + '').split('/').pop() + 'g'
-            );
-            while (m = re.exec(input)) {
-                re.lastIndex -= m[0].length - 1;
-                r.push(m[0]);
-            }
-            return r;
-        }
+			var liftsLookup = L.GeometryUtils.arrayToMap(lifts, 'code');
 
 
-        // var tmp = tmp.match(re)
-        var tmp = matchOverlap(tmp, re)
+			// Group connection data by cart type
+			//var connectionLookup = _.groupBy(connections, function (value) {
+				//	return value.cad_type;
+				//});
+				var searchWords = []
+				for (var i = 0; i < connections.length; i++) {
+					searchWords.push('-' + connections[i].source + '-' + connections[i].target + '-')
+				}
+				var tmp = ''
+				var re = new RegExp(searchWords.join("|"), "g");
+				for (var i = 0; i < persone.length; i++) {
 
-        var obj = {};
-        for (var i = 0, j = tmp.length; i < j; i++) {
-            obj[tmp[i]] = (obj[tmp[i]] || 0) + 1;
-        }
-        var m = 0
-        for (var i = 0; i < connections.length; i++) {
-            connections[i].cnt = obj['-' + connections[i].source + '-' + connections[i].target + '-']
-            connections[i].logcnt = Math.log(obj['-' + connections[i].source + '-' + connections[i].target + '-'] + 1)
+					tmp += persone[i].path
 
-        }
-        connections = _.sortBy(connections, function(value) {
-            return -1 * value.cnt;
-        });
+				}
 
-        var maxCount = Number(connections[0].cnt);
-        var lmaxCount = Number(connections[0].logcnt);
-
-        var count = 0;
-
-        // Get a lift location.  This function looks up an airport from a provided airport code
-        var getLocation = function(context, locationField, fieldValues, callback) {
-            var key = fieldValues[0];
-            var lift = liftsLookup[key];
-            var location;
-
-            if (lift) {
-                var latlng = new L.LatLng(Number(lift.lat), Number(lift.lon));
-                location = {
-                    location: latlng,
-                    text: key,
-                    center: latlng
-                };
-            }
-            return location;
-        };
-
-        var sizeFunction = new L.LinearFunction([1, 16], [253, 48]);
-        var options = {
-            recordsField: null,
-            locationMode: L.LocationModes.CUSTOM,
-            fromField: 'source',
-            toField: 'target',
-            fromLabel: 'source-label',
-            toLabel: 'target-label',
-            codeField: null,
-            getLocation: getLocation,
-            getEdge: L.Graph.EDGESTYLE.ARC,
-            includeLayer: function(record) {
-                return false;
-            },
-            getIndexKey: function(location, record) {
-                return record.source + '_' + record.target;
-            },
-            setHighlight: function(style) {
-                style.opacity = 1.0;
-                return style;
-            },
-            unsetHighlight: function(style) {
-                style.opacity = 0.5;
-                return style;
-            },
-            layerOptions: {
-                fill: false,
-                opacity: 0.5,
-                weight: 0.5,
-                fillOpacity: 1.0,
-                distanceToHeight: new L.LinearFunction([0, 20], [1000, 300]),
-                markers: {
-                    end: true
-                },
-                // Use Q for quadratic and C for cubic
-                mode: 'Q'
-            },
-            legendOptions: {
-                width: 200,
-                numSegments: 5,
-                className: 'legend-line'
-            },
-            tooltipOptions: {
-                iconSize: new L.Point(280, 164),
-                iconAnchor: new L.Point(-5, 64),
-                className: 'leaflet-div-icon line-legend'
-            },
-            displayOptions: {
-                cnt: {
-                    weight: new L.LinearFunction([0, 1], [maxCount, 10]),
-                    color: new L.HSLHueFunction([0, 200], [maxCount, 330], {
-                        outputLuminosity: '60%'
-                    }),
-                    displayName: 'count #'
-                },
-                logcnt: {
-                    weight: new L.LinearFunction([0, 1], [lmaxCount, 10]),
-                    color: new L.HSLHueFunction([0, 200], [lmaxCount, 330], {
-                        outputLuminosity: '60%'
-                    }),
-                    displayName: 'log' //NON DEVE ESSERE CAMBIATO PERCHE' ALTRIMENTI AGGIUNGE A LEGENDA
-                }
-            },
-            onEachRecord: function(layer, record) {
-                layer.bindPopup($(L.HTMLUtils.buildTable(record)).wrap('<div/>').parent().html());
-            }
-        };
-        var allLayer = new L.Graph(connections, options);
-        map.addLayer(allLayer);
+				function matchOverlap(input, re) {
+					var r = [],
+					m;
+					// prevent infinite loops
+					if (!re.global) re = new RegExp(
+						re.source, (re + '').split('/').pop() + 'g'
+					);
+					while (m = re.exec(input)) {
+						re.lastIndex -= m[0].length - 1;
+						r.push(m[0]);
+					}
+					return r;
+				}
 
 
-        var liftsLayer = new L.MarkerDataLayer(liftsLookup, {
-            recordsField: null,
-            locationMode: L.LocationModes.LATLNG,
-            latitudeField: 'lat',
-            longitudeField: 'lon',
+				// var tmp = tmp.match(re)
+				var tmp = matchOverlap(tmp, re)
 
-            layerOptions: {
-                fill: false,
-                stroke: false,
-                weight: 0,
-                color: '#006cbf'
-            },
+				var obj = {};
+				for (var i = 0, j = tmp.length; i < j; i++) {
+					obj[tmp[i]] = (obj[tmp[i]] || 0) + 1;
+				}
+				var m = 0
+				for (var i = 0; i < connections.length; i++) {
+					connections[i].cnt = obj['-' + connections[i].source + '-' + connections[i].target + '-']
+					connections[i].logcnt = Math.log(obj['-' + connections[i].source + '-' + connections[i].target + '-'] + 1)
 
-            setIcon: function(record, options) {
-                var html = '<div><i class="fa fa-map-marker"></i><span class="code">' + record.code + '</span></div>';
-                var $html = $(html);
+				}
+				connections = _.sortBy(connections, function(value) {
+					return -1 * value.cnt;
+				});
 
-                var $i = $html.find('i');
-                L.StyleConverter.applySVGStyle($i.get(0), options);
-                var size = 28; //dimensione fissa #TODO: size in base a una metrica decente
+				var maxCount = Number(connections[0].cnt);
+				var lmaxCount = Number(connections[0].logcnt);
 
-                $i.width(size);
-                $i.height(size);
-                $i.css('font-size', size + 'px');
-                $i.css('line-height', size + 'px');
+				var count = 0;
 
-                var icon = new L.DivIcon({
-                    iconSize: new L.Point(size, size),
-                    iconAnchor: new L.Point(size / 2, size),
-                    className: 'airport-icon',
-                    html: $html.wrap('<div/>').parent().html()
+				// Get a lift location.  This function looks up an airport from a provided airport code
+				var getLocation = function(context, locationField, fieldValues, callback) {
+					var key = fieldValues[0];
+					var lift = liftsLookup[key];
+					var location;
 
-                });
-                return icon;
-            },
-            onEachRecord: function(layer, record) {
-                layer.on('mouseover', function() {
-                    $info.removeAttr('style');
-                    $info.empty();
-                    $info.append($(L.HTMLUtils.buildTable(record, className = '', ignoreFields = ['code', 'passaggi', 'label_ora'])).wrap('<div/>').parent().html());
-                    $info.append($('<div id="chart_div"></div>'));
-                    $info.append($('<div id="pie_div"></div>'));
+					if (lift) {
+						var latlng = new L.LatLng(Number(lift.lat), Number(lift.lon));
+						location = {
+							location: latlng,
+							text: key,
+							center: latlng
+						};
+					}
+					return location;
+				};
 
-                    var pie = []
-                    for (var j = 0; j < connections.length; j++) {
-                        if (connections[j].source == record.code)
-                            pie.push([connections[j]['target-label'], connections[j].cnt])
-                    }
-                    console.log(pie)
+				var sizeFunction = new L.LinearFunction([1, 16], [253, 48]);
+				var options = {
+					recordsField: null,
+					locationMode: L.LocationModes.CUSTOM,
+					fromField: 'source',
+					toField: 'target',
+					fromLabel: 'source-label',
+					toLabel: 'target-label',
+					codeField: null,
+					getLocation: getLocation,
+					getEdge: L.Graph.EDGESTYLE.ARC,
+					includeLayer: function(record) {
+						return false;
+					},
+					getIndexKey: function(location, record) {
+						return record.source + '_' + record.target;
+					},
+					setHighlight: function(style) {
+						style.opacity = 1.0;
+						return style;
+					},
+					unsetHighlight: function(style) {
+						style.opacity = 0.5;
+						return style;
+					},
+					layerOptions: {
+						fill: false,
+						opacity: 0.5,
+						weight: 0.5,
+						fillOpacity: 1.0,
+						distanceToHeight: new L.LinearFunction([0, 20], [1000, 300]),
+						markers: {
+							end: true
+						},
+						// Use Q for quadratic and C for cubic
+						mode: 'Q'
+					},
+					legendOptions: {
+						width: 200,
+						numSegments: 5,
+						className: 'legend-line'
+					},
+					tooltipOptions: {
+						iconSize: new L.Point(280, 164),
+						iconAnchor: new L.Point(-5, 64),
+						className: 'leaflet-div-icon line-legend'
+					},
+					displayOptions: {
+						cnt: {
+							weight: new L.LinearFunction([0, 1], [maxCount, 10]),
+							color: new L.HSLHueFunction([0, 200], [maxCount, 330], {
+								outputLuminosity: '60%'
+							}),
+							displayName: 'count #'
+						},
+						logcnt: {
+							weight: new L.LinearFunction([0, 1], [lmaxCount, 10]),
+							color: new L.HSLHueFunction([0, 200], [lmaxCount, 330], {
+								outputLuminosity: '60%'
+							}),
+							displayName: 'log' //NON DEVE ESSERE CAMBIATO PERCHE' ALTRIMENTI AGGIUNGE A LEGENDA
+						}
+					},
+					onEachRecord: function(layer, record) {
+						layer.bindPopup($(L.HTMLUtils.buildTable(record)).wrap('<div/>').parent().html());
+					}
+				};
+				var allLayer = new L.Graph(connections, options);
+				map.addLayer(allLayer);
 
-                    var a = eval(record.label_ora);
-                    var b = eval(record.passaggi);
-                    var c = a.map(function(e, i) {
-                        return [a[i], b[i]];
-                    });
 
-                    google.charts.setOnLoadCallback(drawBars(c));
-                    google.charts.setOnLoadCallback(drawPie(pie));
+				var liftsLayer = new L.MarkerDataLayer(liftsLookup, {
+					recordsField: null,
+					locationMode: L.LocationModes.LATLNG,
+					latitudeField: 'lat',
+					longitudeField: 'lon',
 
-                    allLayer.options.includeLayer = function(newRecord) {
-                        return newRecord.source === record.code;
-                    };
-                    allLayer.reloadData();
-                });
+					layerOptions: {
+						fill: false,
+						stroke: false,
+						weight: 0,
+						color: '#006cbf'
+					},
+
+					setIcon: function(record, options) {
+						var html = '<div><i class="fa fa-map-marker"></i><span class="code">' + record.code + '</span></div>';
+						var $html = $(html);
+
+						var $i = $html.find('i');
+						L.StyleConverter.applySVGStyle($i.get(0), options);
+						var size = 28; //dimensione fissa #TODO: size in base a una metrica decente
+
+						$i.width(size);
+						$i.height(size);
+						$i.css('font-size', size + 'px');
+						$i.css('line-height', size + 'px');
+
+						var icon = new L.DivIcon({
+							iconSize: new L.Point(size, size),
+							iconAnchor: new L.Point(size / 2, size),
+							className: 'airport-icon',
+							html: $html.wrap('<div/>').parent().html()
+
+						});
+						return icon;
+					},
+					onEachRecord: function(layer, record) {
+						layer.on('mouseover', function() {
+							$info.removeAttr('style');
+							$info.empty();
+							$info.append($(L.HTMLUtils.buildTable(record, className = '', ignoreFields = ['code', 'passaggi', 'label_ora'])).wrap('<div/>').parent().html());
+							$info.append($('<div id="chart_div"></div>'));
+							$info.append($('<div id="pie_div"></div>'));
+
+							var pie = []
+							for (var j = 0; j < connections.length; j++) {
+								if (connections[j].source == record.code)
+									pie.push([connections[j]['target-label'], connections[j].cnt])
+							}
+							console.log(pie)
+
+							var a = eval(record.label_ora);
+							var b = eval(record.passaggi);
+							var c = a.map(function(e, i) {
+								return [a[i], b[i]];
+							});
+
+							google.charts.setOnLoadCallback(drawBars(c));
+							google.charts.setOnLoadCallback(drawPie(pie));
+
+							allLayer.options.includeLayer = function(newRecord) {
+								return newRecord.source === record.code;
+							};
+							allLayer.reloadData();
+						});
 
 
-            }
-        });
+					}
+				});
 
-        $('#map').on('click', function() {
-            $('#info').attr('style', 'display:none');
-            allLayer.options.includeLayer = function(newRecord) {
-                return newRecord.source == null
-            };
-            allLayer.reloadData();
-        });
-        map.addLayer(liftsLayer);
-        layerControl.addOverlay(liftsLayer, 'Lifts');
-    </script>
+				$('#map').on('click', function() {
+					$('#info').attr('style', 'display:none');
+					allLayer.options.includeLayer = function(newRecord) {
+						return newRecord.source == null
+					};
+					allLayer.reloadData();
+				});
+				map.addLayer(liftsLayer);
+				layerControl.addOverlay(liftsLayer, 'Lifts');
+				</script>
 
-</body>
+			</body>
 
-</html>
+			</html>
