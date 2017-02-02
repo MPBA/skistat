@@ -883,6 +883,12 @@ L.LegendIcon = L.DivIcon.extend({
         var legendTitle = L.DomUtil.create('div', 'title', legendContent);
         var legendBox = L.DomUtil.create('div', 'legend-box', legendContent);
         var legendValues = L.DomUtil.create('div', 'legend-values', legendContent);
+
+        var plot = L.DomUtil.create('div', 'plot_div', legendContent);
+        plot.innerHTML = '<div id="' + layerOptions.graph_div + '"></div>';
+        console.log(plot)
+
+
         var field;
         var title = layerOptions.title || layerOptions.name;
 
@@ -4560,7 +4566,6 @@ L.ChartMarker = L.FeatureGroup.extend({
                 name: currentOptions.displayName,
                 value: displayText
             };
-
             var icon = new L.LegendIcon(legendOptions, currentOptions, {
                 className: 'leaflet-div-icon',
                 iconSize: tooltipOptions ? tooltipOptions.iconSize : iconSize,
@@ -4578,6 +4583,10 @@ L.ChartMarker = L.FeatureGroup.extend({
             this.setStyle(currentOptions);
 
             self.addLayer(currentOptions.marker);
+
+
+
+
         });
 
         chartElement.on('mouseout', function(e) {
@@ -6010,6 +6019,8 @@ L.DataLayer = L.LayerGroup.extend({
 
             var target = e.target;
             var layerOptions = this.options || target.options;
+
+
             var icon = new L.LegendIcon(legendDetails, layerOptions, {
                 className: tooltipOptions.className || 'leaflet-div-icon',
                 iconSize: tooltipOptions.iconSize,
@@ -6038,6 +6049,17 @@ L.DataLayer = L.LayerGroup.extend({
             if (target.setStyle) {
                 target.setStyle(layerOptions);
             }
+
+            var a = layerOptions.data_for_plot.a;
+            var b = layerOptions.data_for_plot.b;
+
+            var c = a.map(function(e, i) {
+                return [a[i], b[i]];
+            });
+            google.charts.setOnLoadCallback(layerOptions.function_plot(c));
+
+
+
 
             // Addresses https://github.com/humangeo/leaflet-dvf/issues/30
             target.isHighlighted = true;
@@ -6135,7 +6157,6 @@ L.DataLayer = L.LayerGroup.extend({
                 }
             }
         }
-
         return {
             layerOptions: layerOptions,
             legendDetails: legendDetails
@@ -6223,6 +6244,9 @@ L.DataLayer = L.LayerGroup.extend({
 
             if (location && layerOptions) {
                 layerOptions.title = location.text;
+                layerOptions.graph_div = location.graph_div;
+                layerOptions.function_plot = location.function_plot
+                layerOptions.data_for_plot = location.data_for_plot
 
                 // If layer indexing is being used, then load the existing layer from the index
                 layer = this._getIndexedLayer(this._layerIndex, location, layerOptions, record);
@@ -8204,7 +8228,6 @@ L.SparklineMarker = L.ChartMarker.extend({
                     name: currentOptions.displayName,
                     value: displayText
                 };
-
                 var icon = new L.LegendIcon(legendOptions, currentOptions, {
                     className: 'leaflet-div-icon',
                     iconSize: tooltipOptions ? tooltipOptions.iconSize : iconSize,
@@ -8232,7 +8255,7 @@ L.SparklineMarker = L.ChartMarker.extend({
 
         chartElement.on('mouseover', function(e) {
             var currentOptions = this.options;
-
+            console.log('ciao')
             currentOptions = self._highlight(currentOptions);
 
             this.initialize(self._latlng, currentOptions);
@@ -8582,7 +8605,6 @@ L.Graph = L.Graph.extend({
         return location.location;
     },
     _getLocation: function(record, index) {
-        //console.log('entro')
         var fromField = this.options.fromField;
         var toField = this.options.toField;
         var location;
@@ -8595,6 +8617,10 @@ L.Graph = L.Graph.extend({
 
         var fromLocation = this.options.locationMode.call(this, fromValue, fromValue);
         var toLocation = this.options.locationMode.call(this, toValue, toValue);
+
+        var a = eval(L.Util.getFieldValue(record, this.options.chart_labels));
+        var b = eval(L.Util.getFieldValue(record, this.options.chart_data));
+
 
 
         // Get from location
@@ -8610,7 +8636,10 @@ L.Graph = L.Graph.extend({
                 location = {
                     center: bounds.getCenter(),
                     location: line,
-                    text: fromLabel + ' - ' + toLabel
+                    text: fromLabel + ' - ' + toLabel,
+                    graph_div: this.options.graph_div,
+                    data_for_plot: { 'a': a, 'b': b },
+                    function_plot: this.options.graph_fuction
                 };
             }
         }
