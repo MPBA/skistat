@@ -8630,7 +8630,7 @@ L.Graph = L.Graph.extend({
                 location = {
                     center: bounds.getCenter(),
                     location: line,
-                    text: fromLabel + ' - ' + toLabel,
+                    text: 'From: ' + fromLabel + ' <br><br> To: ' + toLabel,
                     graph_div: this.options.graph_div,
                     function_plot: this.options.graph_fuction,
                     index: index

@@ -10,7 +10,7 @@ div.leaflet-div-icon {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     width: auto;
     background: '#fff';
-    background-color: '#ffff';
+    background-color: '#fff';
     background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
@@ -65,12 +65,13 @@ div.leaflet-div-icon div div.legend-box {
     display: inline-block;
     margin-right: 4px;
     margin-bottom: 0px;
+	display: none;
 }
 
 div.leaflet-div-icon div div.key {
-    margin: 12px 10px 0px 0px;
+    margin: 0;
     font-weight: bold;
-    line-height: 10px;
+  
     display: inline-block;
 	font-size: 14px;
 }
