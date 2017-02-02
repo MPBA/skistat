@@ -883,10 +883,9 @@ L.LegendIcon = L.DivIcon.extend({
         var legendTitle = L.DomUtil.create('div', 'title', legendContent);
         var legendBox = L.DomUtil.create('div', 'legend-box', legendContent);
         var legendValues = L.DomUtil.create('div', 'legend-values', legendContent);
-
+        //create space for the plot
         var plot = L.DomUtil.create('div', 'plot_div', legendContent);
         plot.innerHTML = '<div id="' + layerOptions.graph_div + '"></div>';
-        console.log(plot)
 
 
         var field;
@@ -6050,8 +6049,8 @@ L.DataLayer = L.LayerGroup.extend({
                 target.setStyle(layerOptions);
             }
 
-            var a = layerOptions.data_for_plot.a;
-            var b = layerOptions.data_for_plot.b;
+            var a = eval(connections[layerOptions.index].label_ora);
+            var b = eval(connections[layerOptions.index].passaggi);
 
             var c = a.map(function(e, i) {
                 return [a[i], b[i]];
@@ -6245,9 +6244,8 @@ L.DataLayer = L.LayerGroup.extend({
             if (location && layerOptions) {
                 layerOptions.title = location.text;
                 layerOptions.graph_div = location.graph_div;
-                layerOptions.function_plot = location.function_plot
-                layerOptions.data_for_plot = location.data_for_plot
-
+                layerOptions.index = location.index;
+                layerOptions.function_plot = location.function_plot;
                 // If layer indexing is being used, then load the existing layer from the index
                 layer = this._getIndexedLayer(this._layerIndex, location, layerOptions, record);
 
@@ -8255,7 +8253,6 @@ L.SparklineMarker = L.ChartMarker.extend({
 
         chartElement.on('mouseover', function(e) {
             var currentOptions = this.options;
-            console.log('ciao')
             currentOptions = self._highlight(currentOptions);
 
             this.initialize(self._latlng, currentOptions);
@@ -8618,9 +8615,6 @@ L.Graph = L.Graph.extend({
         var fromLocation = this.options.locationMode.call(this, fromValue, fromValue);
         var toLocation = this.options.locationMode.call(this, toValue, toValue);
 
-        var a = eval(L.Util.getFieldValue(record, this.options.chart_labels));
-        var b = eval(L.Util.getFieldValue(record, this.options.chart_data));
-
 
 
         // Get from location
@@ -8638,8 +8632,8 @@ L.Graph = L.Graph.extend({
                     location: line,
                     text: fromLabel + ' - ' + toLabel,
                     graph_div: this.options.graph_div,
-                    data_for_plot: { 'a': a, 'b': b },
-                    function_plot: this.options.graph_fuction
+                    function_plot: this.options.graph_fuction,
+                    index: index
                 };
             }
         }
