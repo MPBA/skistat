@@ -87,6 +87,28 @@
         #info table {
             background-color: #fff;
         }
+        
+        #info2 {
+            margin: 10px;
+            position: absolute;
+            left: 0px;
+            bottom: 0;
+            width: 400px;
+            height: 700px;
+            overflow-y: auto;
+            max-height: 700px;
+            z-index: 999999;
+        }
+        
+        .node {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        .link {
+            fill: none;
+            stroke: #000;
+        }
     </style>
     <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -100,6 +122,8 @@
     <div id="container">
         <div id="map" style="width:100%; height:100%"></div>
         <div id="info" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
+        <div id="info2" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
+
     </div>
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -115,6 +139,12 @@
     <script type="text/javascript" src="lib/dvf/dvf.js"></script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script type="text/javascript" src="lib/dvf/tree.js"></script>
+    <script type="text/javascript" src="lib/dvf/tipsy.js"></script>
+    <script type="text/javascript" src="lib/dvf/tree.js"></script>
+    <link rel="stylesheet" href="lib/dvf/tipsy.css" type="text/css" media="screen" />
+
 
     <script>
         google.charts.load('current', {
@@ -207,7 +237,10 @@
 
     <script>
         var $info = $('#info');
-        var selezionate = []
+        var $info2 = $('#info2');
+        var selezionate = [];
+        var selected;
+        var indici_tree = 0;
         var map = L.map('map').setView([46.34964, 11.54823], 13);
         var base_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciyk0od5a001u2skez1cmz44q/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -270,11 +303,11 @@
 
 
         // var tmp = tmp.match(re)
-        var tmp = matchOverlap(tmp, re)
+        var res = matchOverlap(tmp, re)
 
         var obj = {};
-        for (var i = 0, j = tmp.length; i < j; i++) {
-            obj[tmp[i]] = (obj[tmp[i]] || 0) + 1;
+        for (var i = 0, j = res.length; i < j; i++) {
+            obj[res[i]] = (obj[res[i]] || 0) + 1;
         }
         var m = 0
         for (var i = 0; i < connections.length; i++) {
@@ -451,9 +484,42 @@
             }
         });
 
+        redraw_flow = function() {
+
+            if (selezionate.length == 1) {
+                //se e' il primo questo diventa root
+                var root = selected;
+                var path_generale = '-' + selected + '-';
+                var root_info = $.grep(lifts, function(e) {
+                    return e.code == root;
+                })[0];
+                console.log(asd = lifts, root_info)
+                var pas = eval(root_info.passaggi);
+                var count = 0;
+                for (var k = 0; k < pas.length; count += pas[k++]);
+                var tree_structure = new create_tree(selected, root_info.name, count, tmp);
+
+
+
+                indici_tree++;
+                for (var j = 0; j < connections.length; j++) {
+                    if (connections[j].source == selected) {
+
+                        //conto quanti passaggi ha source--target
+                        count = matchOverlap(tmp, new RegExp((path_generale + connections[j].target + '-'), "g")).length;
+                        tree_structure.update(indici_tree++, 0, connections[j].target, connections[j]['target-label'], count)
+
+
+                    }
+                }
+            } else {
+
+            }
+
+        }
         $('#map').on('click', function(e) {
             if (!e.ctrlKey) {
-                selezionate = []
+                //selezionate = []
                 $('#info').attr('style', 'display:none');
                 allLayer.options.includeLayer = function(newRecord) {
                     return newRecord.source == null
@@ -464,8 +530,19 @@
                     return newRecord.source == null
                 };
                 allLayer.reloadData();
-                $('#info').html('')
-                console.log(ee = e.target.attributes[1].nodeValue)
+                if (selezionate.length == 0) {
+                    $info2.removeAttr('style');
+                    $info2.empty();
+                }
+                selected = Number(e.target.attributes[1].nodeValue)
+                if (selezionate.indexOf(selected) > 0) {
+                    selezionate.splice(selezionate.indexOf(selected), 1);
+                } else {
+                    selezionate.push(selected)
+                }
+                if (selezionate.length > 0)
+                    redraw_flow()
+                    //console.log(ee = e.target.attributes[1].nodeValue)
             }
         });
         map.addLayer(liftsLayer);
