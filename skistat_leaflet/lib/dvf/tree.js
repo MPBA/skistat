@@ -1,3 +1,24 @@
+/*
+
+var tree_structure = new create_tree(selected, root_info.name, count);
+
+
+
+                /* indici_tree++;
+                 for (var j = 0; j < connections.length; j++) {
+                     if (connections[j].source == selected) {
+
+                         //conto quanti passaggi ha source--target
+                         count = matchOverlap(tmp, new RegExp((path_generale + connections[j].target + '-'), "g")).length;
+                         tree_structure.update(indici_tree++, 0, connections[j].target, connections[j]['target-label'], count)
+
+
+                     }
+                 }
+
+
+
+
 function create_tree(label, long_label, count) {
 
     this.width = 300;
@@ -115,4 +136,5 @@ function create_tree(label, long_label, count) {
 
     }
 
-}
+} *
+/
