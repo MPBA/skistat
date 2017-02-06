@@ -93,8 +93,8 @@
             position: absolute;
             left: 0px;
             bottom: 0;
-            width: 400px;
-            height: 700px;
+            width: 1200px;
+            height: 300px;
             overflow-y: auto;
             max-height: 700px;
             z-index: 999999;
@@ -113,7 +113,6 @@
         .link {
             fill: none;
             stroke: #ccc;
-            stroke-width: 2px;
         }
     </style>
     <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
@@ -143,6 +142,7 @@
     <script type="text/javascript" src="data/v2/connections.js"></script>
     <script type="text/javascript" src="data/v2/dati.js"></script>
     <script type="text/javascript" src="lib/dvf/dvf.js"></script>
+    <script type="text/javascript" src="data/v2/dati_unique.js"></script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://d3js.org/d3.v3.js"></script>
@@ -288,6 +288,12 @@
         for (var i = 0; i < persone.length; i++) {
 
             tmp += persone[i].path
+
+        }
+        var tmp_unique = ''
+        for (var i = 0; i < persone_unique.length; i++) {
+
+            tmp_unique += persone_unique[i].path
 
         }
 
@@ -482,6 +488,7 @@
                         return newRecord.source === record.code;
                     };
                     allLayer.reloadData();
+                    console.log(asd = allLayer)
                 });
 
 
@@ -501,9 +508,9 @@
             var count = 0;
             for (var k = 0; k < pas.length; count += pas[k++]);
 
-            var m = [20, 120, 20, 120],
-                w = 350 - m[1] - m[3],
-                h = 500 - m[0] - m[2],
+            var m = [20, 20, 20, 20],
+                w = 1100 - m[1] - m[3],
+                h = 260 - m[0] - m[2],
                 i = 0,
                 root;
 
@@ -512,7 +519,7 @@
 
             var diagonal = d3.svg.diagonal()
                 .projection(function(d) {
-                    return [d.x, d.y];
+                    return [d.y, d.x];
                 });
 
             var vis = d3.select("#info2").append("svg:svg")
@@ -526,7 +533,8 @@
                 label: selected,
                 text: root_info.name,
                 count: count,
-                path: '-' + selected
+                path: '-' + selected,
+                passaggi: count
 
             };
             root.x0 = w / 2;
@@ -539,13 +547,7 @@
                 }
             }
 
-            // Initialize the display to show a few nodes.
-            /* root.children.forEach(toggleAll);
-            toggle(root.children[1]);
-            toggle(root.children[1].children[2]);
-            toggle(root.children[9]);
-            toggle(root.children[9].children[0]);
-*/
+
             update(root);
 
 
@@ -564,7 +566,10 @@
                 // Normalize for fixed-depth.
                 nodes.forEach(function(d) {
                     d.y = d.depth * 180;
+                    // d.x = d.depth * 200;
+
                 });
+                tree = tree.size([h, w]);
 
                 // Update the nodes…
                 var node = vis.selectAll("g.node")
@@ -582,17 +587,23 @@
                         var newItem = [];
 
                         for (var j = 0; j < connections.length; j++) {
-                            if (connections[j].source == selected) {
+                            if (connections[j].source == d.label) {
 
                                 //conto quanti passaggi ha source--target
-                                count = matchOverlap(tmp, new RegExp((d.path + '-' + connections[j].target + '-'), "g")).length;
-
-                                if (!d._children || d._children.length === 0) {
+                                count = matchOverlap(tmp_unique, new RegExp((d.path + '-' + connections[j].target + '-'), "g")).length;
+                                var nodo_attuale = $.grep(lifts, function(e) {
+                                    return e.code == connections[j].target;
+                                })[0];
+                                var pas = eval(nodo_attuale.passaggi);
+                                var count_passaggi = 0;
+                                for (var k = 0; k < pas.length; count_passaggi += pas[k++]);
+                                if ((!d._children || d._children.length === 0) && count > 0) {
                                     newItem.push({
                                         label: connections[j].target,
                                         text: connections[j]['target-label'],
                                         count: count,
-                                        path: d.path + '-' + connections[j].target
+                                        path: d.path + '-' + connections[j].target,
+                                        passaggi: count_passaggi
                                     })
 
                                 }
@@ -614,11 +625,15 @@
 
                                 var d = this.__data__;
                                 console.log(d)
-                                return d.text + "<br>" + d.count + " bips";
+                                return d.text + "<br>" + d.count + " bips <br> su un totale di:" + d.passaggi;
                             }
                         })
 
-
+                        allLayer.options.includeLayer = function(newRecord) {
+                            // console.log(d.path, )
+                            return newRecord.source === d.label || matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
+                        };
+                        allLayer.reloadData();
                     });
 
                 nodeEnter.append("svg:circle")
@@ -644,11 +659,13 @@
                 var nodeUpdate = node.transition()
                     .duration(duration)
                     .attr("transform", function(d) {
-                        return "translate(" + d.x + "," + d.y + ")";
+                        return "translate(" + d.y + "," + d.x + ")";
                     });
 
                 nodeUpdate.select("circle")
-                    .attr("r", 4.5)
+                    .attr("r", function(d) {
+                        return Math.log(d.passaggi + 1);
+                    })
                     .style("fill", function(d) {
                         return d._children ? "lightsteelblue" : "#fff";
                     });
@@ -679,6 +696,10 @@
                 // Enter any new links at the parent's previous position.
                 link.enter().insert("svg:path", "g")
                     .attr("class", "link")
+                    .attr("stroke-width", function(d) {
+                        //  console.log(d.target.count)
+                        return Math.log(d.target.count * 10);
+                    })
                     .attr("d", function(d) {
                         var o = {
                             x: source.x0,
@@ -690,7 +711,9 @@
                         });
                     })
                     .transition()
-                    .duration(duration)
+
+
+                .duration(duration)
                     .attr("d", diagonal);
 
                 // Transition links to their new position.
@@ -738,30 +761,32 @@
         }
         $('#map').on('click', function(e) {
             if (!e.ctrlKey) {
-                //selezionate = []
                 $('#info').attr('style', 'display:none');
+                $('#info2').attr('style', 'display:none');
                 allLayer.options.includeLayer = function(newRecord) {
                     return newRecord.source == null
                 };
+                allLayer.reloadData();
+
+                options.displayOptions.logcnt.weight = new L.LinearFunction([0, 1], [lmaxCount, 10])
+                allLayer = new L.Graph(connections, options);
+                map.addLayer(allLayer);
+
                 allLayer.reloadData();
             } else {
                 allLayer.options.includeLayer = function(newRecord) {
                     return newRecord.source == null
                 };
                 allLayer.reloadData();
-                if (selezionate.length == 0) {
-                    $info2.removeAttr('style');
-                    $info2.empty();
-                }
+
+                $info2.removeAttr('style');
+                $info2.empty();
                 selected = Number(e.target.attributes[1].nodeValue)
-                if (selezionate.indexOf(selected) > 0) {
-                    selezionate.splice(selezionate.indexOf(selected), 1);
-                } else {
-                    selezionate.push(selected)
-                }
-                if (selezionate.length > 0)
-                    redraw_flow()
-                    //console.log(ee = e.target.attributes[1].nodeValue)
+                options.displayOptions.logcnt.weight = new L.LinearFunction([0, 1], [1, 5])
+                allLayer = new L.Graph(connections, options);
+                map.addLayer(allLayer);
+
+                redraw_flow()
             }
         });
         map.addLayer(liftsLayer);
