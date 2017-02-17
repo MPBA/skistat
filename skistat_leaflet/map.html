@@ -245,6 +245,7 @@
         var selezionate = [];
         var selected;
         var indici_tree = 0;
+        var blocked = false;
         var map = L.map('map').setView([46.34964, 11.54823], 13);
         var base_layer = L.tileLayer('https://api.mapbox.com/styles/v1/earbitrio/ciyk0od5a001u2skez1cmz44q/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiZWFyYml0cmlvIiwiYSI6Img4M0xNM1EifQ.7fem5ojUeemskoY6LhLOBA', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -258,7 +259,8 @@
 
         var slopes_layer = L.tileLayer('http://tiles.opensnowmap.org/tiles-pistes/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.opensnowmap.org/copyright">OpenSnowMap</a>',
-            subdomains: ['a', 'b', 'c']
+            subdomains: ['a', 'b', 'c'],
+            opacity: 0.5
         }).addTo(map);
         var baseLayers = {
             "Base Layer": base_layer,
@@ -283,18 +285,28 @@
         for (var i = 0; i < connections.length; i++) {
             searchWords.push('-' + connections[i].source + '-' + connections[i].target + '-')
         }
-        var tmp = ''
+        var tmp = '';
+        var total_tmp = [];
+        var total_tmp_unique = []
+
         var re = new RegExp(searchWords.join("|"), "g");
-        for (var i = 0; i < persone.length; i++) {
+        for (var k = 0; k < 1; k++) {
+            tmp = ''
+            for (var i = 0; i < persone.length; i++) {
 
-            tmp += persone[i].path
+                tmp += persone[i].path
 
+            }
+            total_tmp.push(tmp)
         }
         var tmp_unique = ''
-        for (var i = 0; i < persone_unique.length; i++) {
+        for (var k = 0; k < 1; k++) {
+            for (var i = 0; i < persone_unique.length; i++) {
+                tmp_unique = ''
+                tmp_unique += persone_unique[i].path
 
-            tmp_unique += persone_unique[i].path
-
+            }
+            total_tmp_unique.push(tmp)
         }
 
         function matchOverlap(input, re) {
@@ -485,10 +497,9 @@
                     google.charts.setOnLoadCallback(drawPie(pie));
 
                     allLayer.options.includeLayer = function(newRecord) {
-                        return newRecord.source === record.code;
+                        return !blocked ? (newRecord.source === record.code) : false;
                     };
-                    allLayer.reloadData();
-                    console.log(asd = allLayer)
+                    if (!blocked) allLayer.reloadData();
                 });
 
 
@@ -590,7 +601,9 @@
                             if (connections[j].source == d.label) {
 
                                 //conto quanti passaggi ha source--target
-                                count = matchOverlap(tmp_unique, new RegExp((d.path + '-' + connections[j].target + '-'), "g")).length;
+                                count = 0
+                                for (var k = 0; k < 100; k++)
+                                    count += matchOverlap(total_tmp_unique[k], new RegExp((d.path + '-' + connections[j].target + '-'), "g")).length;
                                 var nodo_attuale = $.grep(lifts, function(e) {
                                     return e.code == connections[j].target;
                                 })[0];
@@ -624,14 +637,13 @@
                             title: function() {
 
                                 var d = this.__data__;
-                                console.log(d)
                                 return d.text + "<br>" + d.count + " bips <br> su un totale di:" + d.passaggi;
                             }
                         })
 
                         allLayer.options.includeLayer = function(newRecord) {
                             // console.log(d.path, )
-                            return newRecord.source === d.label || matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
+                            return matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
                         };
                         allLayer.reloadData();
                     });
@@ -761,6 +773,7 @@
         }
         $('#map').on('click', function(e) {
             if (!e.ctrlKey) {
+                blocked = false
                 $('#info').attr('style', 'display:none');
                 $('#info2').attr('style', 'display:none');
                 allLayer.options.includeLayer = function(newRecord) {
@@ -769,11 +782,14 @@
                 allLayer.reloadData();
 
                 options.displayOptions.logcnt.weight = new L.LinearFunction([0, 1], [lmaxCount, 10])
+                options.displayOptions.logcnt.color = new L.HSLHueFunction([0, 200], [lmaxCount, 330])
                 allLayer = new L.Graph(connections, options);
                 map.addLayer(allLayer);
 
                 allLayer.reloadData();
             } else {
+                //devo bloccare l'hover su pin
+                blocked = true
                 allLayer.options.includeLayer = function(newRecord) {
                     return newRecord.source == null
                 };
@@ -782,7 +798,9 @@
                 $info2.removeAttr('style');
                 $info2.empty();
                 selected = Number(e.target.attributes[1].nodeValue)
-                options.displayOptions.logcnt.weight = new L.LinearFunction([0, 1], [1, 5])
+                options.displayOptions.logcnt.weight = new L.LinearFunction([0, 4], [lmaxCount, 4])
+                options.displayOptions.logcnt.color = new L.HSLHueFunction([0, 200], [lmaxCount, 200])
+
                 allLayer = new L.Graph(connections, options);
                 map.addLayer(allLayer);
 
