@@ -114,6 +114,31 @@
             fill: none;
             stroke: #ccc;
         }
+        
+        #mover_container{
+            width:100%;
+            height: 20px;
+            position:absolute;
+            bottom:0;
+            z-index: 999999;
+            transition: 0.3s;
+        }
+        
+        #mover{
+            position: absolute;
+            z-index: 1000001;
+            opacity:0.4;
+        }
+        
+        #mover_tip{
+            
+    position: absolute;
+    bottom: -10px;
+    z-index: 1000000;
+left: 20px;
+            display: none;
+            cursor: default;
+        }
     </style>
     <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -127,7 +152,14 @@
     <div id="container">
         <div id="map" style="width:100%; height:100%"></div>
         <div id="info" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
-        <div id="info2" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
+        <div id="info2" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span>
+        </div>
+        
+        <svg id="mover_container">
+            <rect  id="mover" 0="30" 0="30" width="400" height="20" fill="#0daffd" onmousedown="treeSelected(evt)"
+          transform="matrix(1,0,0,1,0,0)">
+            </rect>     
+        </svg>
 
     </div>
 
@@ -506,6 +538,7 @@
             }
         });
 
+        // ALBERO
         redraw_flow = function() {
 
 
@@ -518,6 +551,8 @@
             var pas = eval(root_info.passaggi);
             var count = 0;
             for (var k = 0; k < pas.length; count += pas[k++]);
+            
+        
 
             var m = [20, 20, 20, 20],
                 w = 1100 - m[1] - m[3],
@@ -532,12 +567,18 @@
                 .projection(function(d) {
                     return [d.y, d.x];
                 });
-
+            
+           
             var vis = d3.select("#info2").append("svg:svg")
                 .attr("width", w + m[1] + m[3])
                 .attr("height", h + m[0] + m[2])
                 .append("svg:g")
-                .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+                .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+                .attr("id","tree");
+            
+            
+
+
 
             root = {
 
@@ -568,6 +609,7 @@
                 d._children = d._children.concat(item);
             }
 
+            
             function update(source) {
                 var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
@@ -587,6 +629,8 @@
                     .data(nodes, function(d) {
                         return d.id || (d.id = ++i);
                     });
+                    
+                
 
                 // Enter any new nodes at the parent's previous position.
                 var nodeEnter = node.enter().append("svg:g")
@@ -595,6 +639,9 @@
                         return "translate(" + source.y0 + "," + source.x0 + ")";
                     })
                     .on("click", function(d) {
+                        
+                            
+                    
                         var newItem = [];
 
                         for (var j = 0; j < connections.length; j++) {
@@ -645,8 +692,34 @@
                             // console.log(d.path, )
                             return matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
                         };
+                        
+                        /*aggiunto da Chiara*/
+                        var svg_coso = $('#info2 svg')[0];
+                        var svg_tree = $(svg_coso)[0].firstChild;
+                        svg_tree_width = svg_tree.getBBox().width;
+
+                        if(svg_tree_width > 200){
+                    
+                        $('#mover_container').css({
+                            display:"block"
+                            })
+                        
+                        //larghezza mover = a quella dell'albero
+                        $('#mover').animate({
+                            "width": svg_tree_width.toString()
+                        },1000,function(){})
+                        
+                        
+                        }else{
+                            $('#mover_container').css({
+                            display:"none"
+                            })
+                        }
+                /*fine parte aggiunta da Chiara*/
+                        
                         allLayer.reloadData();
                     });
+                
 
                 nodeEnter.append("svg:circle")
                     .attr("r", 1e-6)
@@ -753,9 +826,11 @@
                     d.x0 = d.x;
                     d.y0 = d.y;
                 });
+                
             }
 
-            // Toggle children.
+        
+            
             function toggle(d) {
                 if (d.children) {
                     d._children = d.children;
@@ -764,15 +839,33 @@
                     d.children = d._children;
                     d._children = null;
                 }
+            // If the node has a parent, then collapse its child nodes
+            // except for this clicked node.
+            if (d.parent) {
+                d.parent.children.forEach(function(element) {
+                if (d !== element) {
+                collapse(element);
+                }
+            });
+            }
+            update(d);
             }
 
 
+            function collapse(d) {
+            if (d.children) {
+            d._children = d.children;
+            d._children.forEach(collapse);
+            d.children = null;
+            }
+        }
 
 
 
         }
         $('#map').on('click', function(e) {
-            if (!e.ctrlKey) {
+            console.log(pippo = e);
+            if (!e.altKey) {
                 blocked = false
                 $('#info').attr('style', 'display:none');
                 $('#info2').attr('style', 'display:none');
@@ -809,6 +902,71 @@
         });
         map.addLayer(liftsLayer);
         layerControl.addOverlay(liftsLayer, 'Lifts');
+    </script>
+    
+    
+    <script>
+    /*scompigli di Chiara*/
+    var selectedElement = 0;
+    var currentX = 0;
+    var currentY = 0;
+    var currentMatrix = 0;
+    var mover = document.getElementById('mover');
+    var mover_container = document.getElementById('mover_container');
+    var svg_tree_width = 200;
+    
+        $('#mover_container').css({
+                        display:"none"
+                    })
+    
+        $('#mover').on('mousedown', function(e){
+                    treeSelected(e);
+                });
+    
+    function treeSelected(evt){
+
+        var svg_coso = $('#info2 svg')[0];
+        var svg_tree = $(svg_coso)[0].firstChild;
+        
+        selectedElement = svg_tree;
+        currentX = evt.clientX;
+        currentY = evt.clientY;
+        selectedElement.setAttributeNS(null,"transform","matrix(1,0,0,1,0,0)");
+        currentMatrix = selectedElement.getAttributeNS(null,"transform").slice(7,-1).split(',');
+        
+        for(var i = 0; i < currentMatrix.length; i++){
+            currentMatrix[i] = parseFloat(currentMatrix[i]);
+        }
+        
+        mover.setAttributeNS(null,"onmousemove","moveTree(evt)");
+        mover.setAttributeNS(null,"onmouseup","deselectTree(evt)");
+        mover.setAttributeNS(null,"onmouseout","deselectTree(evt)");
+    }
+    
+    function moveTree(evt){
+        var clientX = evt.clientX;
+        var clientY = evt.clientY;
+        
+        var dx = clientX - currentX;
+        var dy = clientY - currentY;
+        
+        currentMatrix[4] += dx * 2;
+        currentMatrix[5] += 0;
+        var newMatrix = "matrix(" + currentMatrix.join(",") + ")";
+        selectedElement.setAttributeNS(null,"transform",newMatrix);
+        
+        currentX = evt.clientX;
+        currentY = evt.clientY;   
+    }
+        
+        function deselectTree(evt){
+            if(selectedElement != 0){
+                mover.removeAttributeNS(null,"onmousemove");
+                mover.removeAttributeNS(null,"onmouseout");
+                mover.removeAttributeNS(null,"onmouseup");
+                selectedElement = 0;
+            }
+        }
     </script>
 
 </body>
