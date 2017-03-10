@@ -11,135 +11,8 @@
     <!-- Le styles -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <style>
-        html,
-        body,
-        #container {
-            height: 100%;
-            overflow: hidden;
-            width: 100%;
-        }
-        
-        #map {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            height: 100%;
-            width: auto;
-        }
-        
-        #map div.leaflet-tile-pane {
-            opacity: 0.8;
-        }
-        
-        div.leaflet-control-legend {
-            width: 400px;
-            max-height: 80px;
-        }
-        
-        .legend-line {
-            margin-bottom: 20px;
-        }
-        
-        .legend-line div.scale-bars i {
-            background: none !important;
-            width: 0px;
-            height: 0px !important;
-            vertical-align: middle;
-            border-left: none !important;
-        }
-        
-        .line-legend .legend-box {
-            width: 0px;
-            height: 0px !important;
-            border-top: none !important;
-            border-right: none !important;
-        }
-        
-        .airport-icon .icon-plane {
-            text-align: center;
-            vertical-align: middle;
-            display: inline-block;
-            text-shadow: 2px 2px 3px #555555
-        }
-        
-        .airport-icon .code {
-            color: #777777;
-            text-align: center;
-            vertical-align: middle;
-            display: inline-block;
-            text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-            font-weight: bold;
-            *background-color: rgba(255, 255, 255, 0.5);
-            *border-radius: 3px;
-        }
-        
-        #info {
-            margin: 10px;
-            position: absolute;
-            right: 0px;
-            bottom: 0;
-            width: 400px;
-            height: 700px;
-            overflow-y: auto;
-            max-height: 700px;
-            z-index: 999999;
-        }
-        
-        #info table {
-            background-color: #fff;
-        }
-        
-        #info2 {
-            margin: 10px;
-            position: absolute;
-            left: 0px;
-            bottom: 0;
-            width: 1200px;
-            height: 300px;
-            overflow-y: auto;
-            max-height: 700px;
-            z-index: 999999;
-        }
-        
-        .node circle {
-            fill: #fff;
-            stroke: steelblue;
-            stroke-width: 3px;
-        }
-        
-        .node text {
-            font: 12px sans-serif;
-        }
-        
-        .link {
-            fill: none;
-            stroke: #ccc;
-        }
-        
-        #mover_container{
-            width:100%;
-            height: 20px;
-            position:absolute;
-            bottom:0;
-            z-index: 999999;
-            transition: 0.3s;
-        }
-        
-        #mover{
-            position: absolute;
-            z-index: 1000001;
-            opacity:0.4;
-        }
-        
-        #mover_tip{
-            
-    position: absolute;
-    bottom: -10px;
-    z-index: 1000000;
-left: 20px;
-            display: none;
-            cursor: default;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/map.css">
+    
     <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
@@ -559,9 +432,14 @@ left: 20px;
                 h = 260 - m[0] - m[2],
                 i = 0,
                 root;
+            
+            var nodeWidth = 300;
+var nodeHeight = 75;
+var horizontalSeparationBetweenNodes = 16;
+var verticalSeparationBetweenNodes = 128;
 
             var tree = d3.layout.tree()
-                .size([h, w]);
+                .nodeSize([nodeWidth + horizontalSeparationBetweenNodes, nodeHeight + verticalSeparationBetweenNodes]);
 
             var diagonal = d3.svg.diagonal()
                 .projection(function(d) {
@@ -693,7 +571,20 @@ left: 20px;
                             return matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
                         };
                         
-                        /*aggiunto da Chiara*/
+                        //onclick on a node, all the nodes and links which were given a specific id are coloured differently
+                    while (d.parent) {
+                    d3.selectAll("#node"+d.id).style("fill", "#0daffd");//color the node
+                        
+                    if (d.parent != "null"){
+                        d3.selectAll("#link"+d.parent.id + "-" + d.id).style("stroke", "#0daffd");//color the path
+                    }
+                    
+                    d = d.parent;
+                    }
+                        
+                        
+                        allLayer.reloadData();
+                        
                         var svg_coso = $('#info2 svg')[0];
                         var svg_tree = $(svg_coso)[0].firstChild;
                         svg_tree_width = svg_tree.getBBox().width;
@@ -704,7 +595,7 @@ left: 20px;
                             display:"block"
                             })
                         
-                        //larghezza mover = a quella dell'albero
+                        //larghezza mover = to the one of the tree map
                         $('#mover').animate({
                             "width": svg_tree_width.toString()
                         },1000,function(){})
@@ -715,14 +606,21 @@ left: 20px;
                             display:"none"
                             })
                         }
-                /*fine parte aggiunta da Chiara*/
                         
-                        allLayer.reloadData();
+                        svg_tree_height = svg_tree.getBBox().height;
+                        
+                        if(svg_tree_height > 200){
+                            //take #info2 and make it expandable
+                        }
+                        
                     });
                 
 
                 nodeEnter.append("svg:circle")
                     .attr("r", 1e-6)
+                    .attr("id", function(d){
+                    return "node" + d.id;
+                })
                     .style("fill", function(d) {
                         return d._children ? "lightsteelblue" : "#fff";
                     });
@@ -752,8 +650,11 @@ left: 20px;
                         return Math.log(d.passaggi + 1);
                     })
                     .style("fill", function(d) {
-                        return d._children ? "lightsteelblue" : "#fff";
-                    });
+                        return d.children ? "#0daffd" : "#fff";
+                    })
+                    .style("stroke",function(d){
+                        return d.children ? "#0daffd" : "steelblue";
+                });
 
                 nodeUpdate.select("text")
                     .style("fill-opacity", 1);
@@ -795,6 +696,9 @@ left: 20px;
                             target: o
                         });
                     })
+                    .attr("id", function(d){
+                    return ("link" + d.source.id + "-" + d.target.id);
+                })
                     .transition()
 
 
@@ -844,6 +748,8 @@ left: 20px;
             if (d.parent) {
                 d.parent.children.forEach(function(element) {
                 if (d !== element) {
+                //resetting the color of the other paths so only the clicked one is blue
+                vis.selectAll("path.link").style("stroke","#ccc");
                 collapse(element);
                 }
             });
@@ -913,6 +819,7 @@ left: 20px;
     var currentMatrix = 0;
     var mover = document.getElementById('mover');
     var mover_container = document.getElementById('mover_container');
+    var svg_tree_height;
     var svg_tree_width = 200;
     
         $('#mover_container').css({
