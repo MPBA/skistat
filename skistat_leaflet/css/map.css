@@ -91,8 +91,8 @@
         }
         
         .node circle {
-            fill: #fff;
-            stroke: steelblue;
+            fill: #ccc;
+            stroke: #ccc;
             stroke-width: 3px;
         }
         
@@ -119,13 +119,22 @@
             z-index: 1000001;
             opacity:0.4;
         }
+
+#info2 svg{
+    transition:0.3s;
+}
         
-        #mover_tip{
-            
-    position: absolute;
-    bottom: -10px;
-    z-index: 1000000;
-left: 20px;
-            display: none;
-            cursor: default;
-        }
+
+#mover_tip{
+    position:absolute;
+    z-index: 99999999999999;
+    padding:5px;
+    text-align: center;
+    background: #fff;
+    width:150px;
+    height:auto;
+    border-radius: 5px;
+    transition:0.3s opacity;
+    transition-timing-function: linear;
+}
+        

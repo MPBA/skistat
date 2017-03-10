@@ -33,6 +33,10 @@
           transform="matrix(1,0,0,1,0,0)">
             </rect>     
         </svg>
+        
+        <div id="mover_tip">
+        <p>Drag to move the tree map</p>
+        </div>
 
     </div>
 
@@ -411,7 +415,6 @@
             }
         });
 
-        // ALBERO
         redraw_flow = function() {
 
 
@@ -622,7 +625,7 @@ var verticalSeparationBetweenNodes = 128;
                     return "node" + d.id;
                 })
                     .style("fill", function(d) {
-                        return d._children ? "lightsteelblue" : "#fff";
+                        return d._children ? "#ccc" : "#ccc";
                     });
 
                 nodeEnter.append("svg:text")
@@ -650,10 +653,10 @@ var verticalSeparationBetweenNodes = 128;
                         return Math.log(d.passaggi + 1);
                     })
                     .style("fill", function(d) {
-                        return d.children ? "#0daffd" : "#fff";
+                        return d.children ? "#0daffd" : "#ccc";
                     })
                     .style("stroke",function(d){
-                        return d.children ? "#0daffd" : "steelblue";
+                        return d.children ? "#0daffd" : "#ccc";
                 });
 
                 nodeUpdate.select("text")
@@ -736,9 +739,10 @@ var verticalSeparationBetweenNodes = 128;
         
             
             function toggle(d) {
+                //collapse the branch if it has children
                 if (d.children) {
-                    d._children = d.children;
-                    d.children = null;
+                    collapse(d);
+                    
                 } else {
                     d.children = d._children;
                     d._children = null;
@@ -812,7 +816,6 @@ var verticalSeparationBetweenNodes = 128;
     
     
     <script>
-    /*scompigli di Chiara*/
     var selectedElement = 0;
     var currentX = 0;
     var currentY = 0;
@@ -829,7 +832,7 @@ var verticalSeparationBetweenNodes = 128;
         $('#mover').on('mousedown', function(e){
                     treeSelected(e);
                 });
-    
+        
     function treeSelected(evt){
 
         var svg_coso = $('#info2 svg')[0];
@@ -857,7 +860,7 @@ var verticalSeparationBetweenNodes = 128;
         var dx = clientX - currentX;
         var dy = clientY - currentY;
         
-        currentMatrix[4] += dx * 2;
+        currentMatrix[4] += dx * 1.2;
         currentMatrix[5] += 0;
         var newMatrix = "matrix(" + currentMatrix.join(",") + ")";
         selectedElement.setAttributeNS(null,"transform",newMatrix);
@@ -874,6 +877,22 @@ var verticalSeparationBetweenNodes = 128;
                 selectedElement = 0;
             }
         }
+    </script>
+    
+    <script>
+    //when the mover is hovered show its tip, hide it when it's not
+    $("#mover").mouseover(function(e){
+        $(document).mousemove(function(e){
+            $("#mover_tip").css({"left":e.pageX,"bottom":"30px","opacity":"1"});
+        });
+    });
+        
+    $("#mover").mouseout(function(e){
+        $(document).mousemove(function(e){
+            $("#mover_tip").css({"opacity":"0"});
+        });
+    })
+    
     </script>
 
 </body>
