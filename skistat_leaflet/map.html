@@ -772,7 +772,9 @@
 
         }
         $('#map').on('click', function(e) {
-            if (!e.ctrlKey) {
+
+            if (!e.altKey) {
+
                 blocked = false
                 $('#info').attr('style', 'display:none');
                 $('#info2').attr('style', 'display:none');
