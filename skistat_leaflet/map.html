@@ -199,6 +199,7 @@
         var total_tmp_unique = []
 
         var re = new RegExp(searchWords.join("|"), "g");
+        //per simulare tanti dati mettere k<100
         for (var k = 0; k < 1; k++) {
             tmp = ''
             for (var i = 0; i < persone.length; i++) {
@@ -441,7 +442,7 @@
             var horizontalSeparationBetweenNodes = 16;
             var verticalSeparationBetweenNodes = 128;
 
-            var tree = d3.layout.tree()
+            var tree = d3.layout.tree() //.size([h, w]);
                 .nodeSize([nodeWidth + horizontalSeparationBetweenNodes, nodeHeight + verticalSeparationBetweenNodes]);
 
             var diagonal = d3.svg.diagonal()
@@ -455,7 +456,7 @@
                 .attr("height", h + m[0] + m[2])
                 .append("svg:g")
                 .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
-                .attr("id", "tree");
+                .attr("id", "tree"); // not in the working file
 
 
 
@@ -530,7 +531,7 @@
 
                                 //conto quanti passaggi ha source--target
                                 count = 0
-                                for (var k = 0; k < 100; k++)
+                                for (var k = 0; k < 1; k++)
                                     count += matchOverlap(total_tmp_unique[k], new RegExp((d.path + '-' + connections[j].target + '-'), "g")).length;
                                 var nodo_attuale = $.grep(lifts, function(e) {
                                     return e.code == connections[j].target;
@@ -570,9 +571,10 @@
                         })
 
                         allLayer.options.includeLayer = function(newRecord) {
-                            // console.log(d.path, )
+                            console.log(d.path)
                             return matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
                         };
+                        allLayer.reloadData();
 
                         //onclick on a node, all the nodes and links which were given a specific id are coloured differently
                         while (d.parent) {
@@ -586,7 +588,6 @@
                         }
 
 
-                        allLayer.reloadData();
 
                         var svg_coso = $('#info2 svg')[0];
                         var svg_tree = $(svg_coso)[0].firstChild;
@@ -776,7 +777,7 @@
         $('#map').on('click', function(e) {
 
 
-            if (!e.altKey) {
+            if (!e.ctrlKey) {
 
 
                 blocked = false
@@ -901,6 +902,7 @@
                 });
             });
         })
+    </script> $(document).mousemove(function(e) { $("#mover_tip").css({ "opacity": "0" }); }); })
     </script>
 
 </body>
