@@ -12,7 +12,7 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/map.css">
-    
+
     <!-- <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-responsive.css"> -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
@@ -27,15 +27,15 @@
         <div id="info" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span></div>
         <div id="info2" class="leaflet-control-legend" style="display:none"><span style="font-style: italic; font-size: 16px;"></span>
         </div>
-        
+
         <svg id="mover_container">
             <rect  id="mover" 0="30" 0="30" width="400" height="20" fill="#0daffd" onmousedown="treeSelected(evt)"
           transform="matrix(1,0,0,1,0,0)">
             </rect>     
         </svg>
-        
+
         <div id="mover_tip">
-        <p>Drag to move the tree map</p>
+            <p>Drag to move the tree map</p>
         </div>
 
     </div>
@@ -427,19 +427,19 @@
             var pas = eval(root_info.passaggi);
             var count = 0;
             for (var k = 0; k < pas.length; count += pas[k++]);
-            
-        
+
+
 
             var m = [20, 20, 20, 20],
                 w = 1100 - m[1] - m[3],
                 h = 260 - m[0] - m[2],
                 i = 0,
                 root;
-            
+
             var nodeWidth = 300;
-var nodeHeight = 75;
-var horizontalSeparationBetweenNodes = 16;
-var verticalSeparationBetweenNodes = 128;
+            var nodeHeight = 75;
+            var horizontalSeparationBetweenNodes = 16;
+            var verticalSeparationBetweenNodes = 128;
 
             var tree = d3.layout.tree()
                 .nodeSize([nodeWidth + horizontalSeparationBetweenNodes, nodeHeight + verticalSeparationBetweenNodes]);
@@ -448,16 +448,16 @@ var verticalSeparationBetweenNodes = 128;
                 .projection(function(d) {
                     return [d.y, d.x];
                 });
-            
-           
+
+
             var vis = d3.select("#info2").append("svg:svg")
                 .attr("width", w + m[1] + m[3])
                 .attr("height", h + m[0] + m[2])
                 .append("svg:g")
                 .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
-                .attr("id","tree");
-            
-            
+                .attr("id", "tree");
+
+
 
 
 
@@ -490,7 +490,7 @@ var verticalSeparationBetweenNodes = 128;
                 d._children = d._children.concat(item);
             }
 
-            
+
             function update(source) {
                 var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
@@ -510,8 +510,8 @@ var verticalSeparationBetweenNodes = 128;
                     .data(nodes, function(d) {
                         return d.id || (d.id = ++i);
                     });
-                    
-                
+
+
 
                 // Enter any new nodes at the parent's previous position.
                 var nodeEnter = node.enter().append("svg:g")
@@ -520,9 +520,9 @@ var verticalSeparationBetweenNodes = 128;
                         return "translate(" + source.y0 + "," + source.x0 + ")";
                     })
                     .on("click", function(d) {
-                        
-                            
-                    
+
+
+
                         var newItem = [];
 
                         for (var j = 0; j < connections.length; j++) {
@@ -573,57 +573,57 @@ var verticalSeparationBetweenNodes = 128;
                             // console.log(d.path, )
                             return matchOverlap(d.path, new RegExp(newRecord.source + '-' + newRecord.target, "g")).length > 0;;
                         };
-                        
+
                         //onclick on a node, all the nodes and links which were given a specific id are coloured differently
-                    while (d.parent) {
-                    d3.selectAll("#node"+d.id).style("fill", "#0daffd");//color the node
-                        
-                    if (d.parent != "null"){
-                        d3.selectAll("#link"+d.parent.id + "-" + d.id).style("stroke", "#0daffd");//color the path
-                    }
-                    
-                    d = d.parent;
-                    }
-                        
-                        
+                        while (d.parent) {
+                            d3.selectAll("#node" + d.id).style("fill", "#0daffd"); //color the node
+
+                            if (d.parent != "null") {
+                                d3.selectAll("#link" + d.parent.id + "-" + d.id).style("stroke", "#0daffd"); //color the path
+                            }
+
+                            d = d.parent;
+                        }
+
+
                         allLayer.reloadData();
-                        
+
                         var svg_coso = $('#info2 svg')[0];
                         var svg_tree = $(svg_coso)[0].firstChild;
                         svg_tree_width = svg_tree.getBBox().width;
 
-                        if(svg_tree_width > 200){
-                    
-                        $('#mover_container').css({
-                            display:"block"
-                            })
-                        
-                        //larghezza mover = to the one of the tree map
-                        $('#mover').animate({
-                            "width": svg_tree_width.toString()
-                        },1000,function(){})
-                        
-                        
-                        }else{
+                        if (svg_tree_width > 200) {
+
                             $('#mover_container').css({
-                            display:"none"
+                                display: "block"
+                            })
+
+                            //larghezza mover = to the one of the tree map
+                            $('#mover').animate({
+                                "width": svg_tree_width.toString()
+                            }, 1000, function() {})
+
+
+                        } else {
+                            $('#mover_container').css({
+                                display: "none"
                             })
                         }
-                        
+
                         svg_tree_height = svg_tree.getBBox().height;
-                        
-                        if(svg_tree_height > 200){
+
+                        if (svg_tree_height > 200) {
                             //take #info2 and make it expandable
                         }
-                        
+
                     });
-                
+
 
                 nodeEnter.append("svg:circle")
                     .attr("r", 1e-6)
-                    .attr("id", function(d){
-                    return "node" + d.id;
-                })
+                    .attr("id", function(d) {
+                        return "node" + d.id;
+                    })
                     .style("fill", function(d) {
                         return d._children ? "#ccc" : "#ccc";
                     });
@@ -655,9 +655,9 @@ var verticalSeparationBetweenNodes = 128;
                     .style("fill", function(d) {
                         return d.children ? "#0daffd" : "#ccc";
                     })
-                    .style("stroke",function(d){
+                    .style("stroke", function(d) {
                         return d.children ? "#0daffd" : "#ccc";
-                });
+                    });
 
                 nodeUpdate.select("text")
                     .style("fill-opacity", 1);
@@ -699,9 +699,9 @@ var verticalSeparationBetweenNodes = 128;
                             target: o
                         });
                     })
-                    .attr("id", function(d){
-                    return ("link" + d.source.id + "-" + d.target.id);
-                })
+                    .attr("id", function(d) {
+                        return ("link" + d.source.id + "-" + d.target.id);
+                    })
                     .transition()
 
 
@@ -733,42 +733,42 @@ var verticalSeparationBetweenNodes = 128;
                     d.x0 = d.x;
                     d.y0 = d.y;
                 });
-                
+
             }
 
-        
-            
+
+
             function toggle(d) {
                 //collapse the branch if it has children
                 if (d.children) {
                     collapse(d);
-                    
+
                 } else {
                     d.children = d._children;
                     d._children = null;
                 }
-            // If the node has a parent, then collapse its child nodes
-            // except for this clicked node.
-            if (d.parent) {
-                d.parent.children.forEach(function(element) {
-                if (d !== element) {
-                //resetting the color of the other paths so only the clicked one is blue
-                vis.selectAll("path.link").style("stroke","#ccc");
-                collapse(element);
+                // If the node has a parent, then collapse its child nodes
+                // except for this clicked node.
+                if (d.parent) {
+                    d.parent.children.forEach(function(element) {
+                        if (d !== element) {
+                            //resetting the color of the other paths so only the clicked one is blue
+                            vis.selectAll("path.link").style("stroke", "#ccc");
+                            collapse(element);
+                        }
+                    });
                 }
-            });
-            }
-            update(d);
+                update(d);
             }
 
 
             function collapse(d) {
-            if (d.children) {
-            d._children = d.children;
-            d._children.forEach(collapse);
-            d.children = null;
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
             }
-        }
 
 
 
@@ -816,86 +816,91 @@ var verticalSeparationBetweenNodes = 128;
         map.addLayer(liftsLayer);
         layerControl.addOverlay(liftsLayer, 'Lifts');
     </script>
-    
-    
-    <script>
-    var selectedElement = 0;
-    var currentX = 0;
-    var currentY = 0;
-    var currentMatrix = 0;
-    var mover = document.getElementById('mover');
-    var mover_container = document.getElementById('mover_container');
-    var svg_tree_height;
-    var svg_tree_width = 200;
-    
-        $('#mover_container').css({
-                        display:"none"
-                    })
-    
-        $('#mover').on('mousedown', function(e){
-                    treeSelected(e);
-                });
-        
-    function treeSelected(evt){
 
-        var svg_coso = $('#info2 svg')[0];
-        var svg_tree = $(svg_coso)[0].firstChild;
-        
-        selectedElement = svg_tree;
-        currentX = evt.clientX;
-        currentY = evt.clientY;
-        selectedElement.setAttributeNS(null,"transform","matrix(1,0,0,1,0,0)");
-        currentMatrix = selectedElement.getAttributeNS(null,"transform").slice(7,-1).split(',');
-        
-        for(var i = 0; i < currentMatrix.length; i++){
-            currentMatrix[i] = parseFloat(currentMatrix[i]);
+
+    <script>
+        var selectedElement = 0;
+        var currentX = 0;
+        var currentY = 0;
+        var currentMatrix = 0;
+        var mover = document.getElementById('mover');
+        var mover_container = document.getElementById('mover_container');
+        var svg_tree_height;
+        var svg_tree_width = 200;
+
+        $('#mover_container').css({
+            display: "none"
+        })
+
+        $('#mover').on('mousedown', function(e) {
+            treeSelected(e);
+        });
+
+        function treeSelected(evt) {
+
+            var svg_coso = $('#info2 svg')[0];
+            var svg_tree = $(svg_coso)[0].firstChild;
+
+            selectedElement = svg_tree;
+            currentX = evt.clientX;
+            currentY = evt.clientY;
+            selectedElement.setAttributeNS(null, "transform", "matrix(1,0,0,1,0,0)");
+            currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7, -1).split(',');
+
+            for (var i = 0; i < currentMatrix.length; i++) {
+                currentMatrix[i] = parseFloat(currentMatrix[i]);
+            }
+
+            mover.setAttributeNS(null, "onmousemove", "moveTree(evt)");
+            mover.setAttributeNS(null, "onmouseup", "deselectTree(evt)");
+            mover.setAttributeNS(null, "onmouseout", "deselectTree(evt)");
         }
-        
-        mover.setAttributeNS(null,"onmousemove","moveTree(evt)");
-        mover.setAttributeNS(null,"onmouseup","deselectTree(evt)");
-        mover.setAttributeNS(null,"onmouseout","deselectTree(evt)");
-    }
-    
-    function moveTree(evt){
-        var clientX = evt.clientX;
-        var clientY = evt.clientY;
-        
-        var dx = clientX - currentX;
-        var dy = clientY - currentY;
-        
-        currentMatrix[4] += dx * 1.2;
-        currentMatrix[5] += 0;
-        var newMatrix = "matrix(" + currentMatrix.join(",") + ")";
-        selectedElement.setAttributeNS(null,"transform",newMatrix);
-        
-        currentX = evt.clientX;
-        currentY = evt.clientY;   
-    }
-        
-        function deselectTree(evt){
-            if(selectedElement != 0){
-                mover.removeAttributeNS(null,"onmousemove");
-                mover.removeAttributeNS(null,"onmouseout");
-                mover.removeAttributeNS(null,"onmouseup");
+
+        function moveTree(evt) {
+            var clientX = evt.clientX;
+            var clientY = evt.clientY;
+
+            var dx = clientX - currentX;
+            var dy = clientY - currentY;
+
+            currentMatrix[4] += dx * 1.2;
+            currentMatrix[5] += 0;
+            var newMatrix = "matrix(" + currentMatrix.join(",") + ")";
+            selectedElement.setAttributeNS(null, "transform", newMatrix);
+
+            currentX = evt.clientX;
+            currentY = evt.clientY;
+        }
+
+        function deselectTree(evt) {
+            if (selectedElement != 0) {
+                mover.removeAttributeNS(null, "onmousemove");
+                mover.removeAttributeNS(null, "onmouseout");
+                mover.removeAttributeNS(null, "onmouseup");
                 selectedElement = 0;
             }
         }
     </script>
-    
+
     <script>
-    //when the mover is hovered show its tip, hide it when it's not
-    $("#mover").mouseover(function(e){
-        $(document).mousemove(function(e){
-            $("#mover_tip").css({"left":e.pageX,"bottom":"30px","opacity":"1"});
+        //when the mover is hovered show its tip, hide it when it's not
+        $("#mover").mouseover(function(e) {
+            $(document).mousemove(function(e) {
+                $("#mover_tip").css({
+                    "left": e.pageX,
+                    "bottom": "30px",
+                    "opacity": "1"
+                });
+            });
         });
-    });
-        
-    $("#mover").mouseout(function(e){
-        $(document).mousemove(function(e){
-            $("#mover_tip").css({"opacity":"0"});
-        });
-    })
-    
+
+        $("#mover").mouseout(function(e) {
+            $(document).mousemove(function(e) {
+                $("#mover_tip").css({
+                    "opacity": "0"
+                });
+            });
+        })
     </script>
 
 </body>
